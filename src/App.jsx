@@ -11,6 +11,29 @@ import Placeholder from 'react-bootstrap/Placeholder';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
 
+
+const parseQuery = (queryString) => {
+  const query = {};
+  const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].split('=');
+    query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+  }
+  console.log('query', query)
+  return query;
+};
+
+// Function to filter data based on query parameters
+const filterData = (data, query) => {
+  return data.filter(item => {
+    const nameMatch = query.name ? item.name.toLowerCase().includes(query.name.toLowerCase()) : true;
+    const emailMatch = query.email ? item.email.toLowerCase().includes(query.email.toLowerCase()) : true;
+    const roleMatch = query.role ? item.role.toLowerCase().includes(query.role.toLowerCase()) : true;
+    return nameMatch && emailMatch && roleMatch;
+  });
+};
+
+
 function App() {
   const [finalllUsers, setfinalllUsers] = useState([])
   const [allUsers, setallUsers] = useState([])
@@ -25,12 +48,29 @@ function App() {
   const handleShow = () => setShow(true);
 
   const [query, setQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const keys = ["name", "email", "role"];
+
+
+
  
   const searchUsers = (data) => {
     return data.filter((item) =>
       keys.some((key) => item[key].toLowerCase().includes(query))
     );
+  };
+
+  
+  const searchwithQueryUsers = (data) => {
+
+
+    
+  const parsedQuery = parseQuery(searchQuery);
+  const filteredData = filterData(finalllUsers, parsedQuery);
+
+  console.log('filteredData', filteredData)
+  return filteredData
   };
 
   useEffect(() => {
@@ -156,7 +196,16 @@ function App() {
 
   }, [query])
 
+  
 
+  useEffect(() => {
+    setallUsers(searchwithQueryUsers(finalllUsers))
+
+    setselectedPages(1)
+
+  }, [searchQuery])
+
+  // 
 
   let content=(<tr >
   <td>
@@ -224,6 +273,17 @@ else if(!loading && users.length > 0 ){
         </Button>
       </InputGroup>
     
+      <InputGroup className="mb-3">
+     ?   <Form.Control
+          placeholder="Search query"
+          aria-label="Recipient's username"
+          aria-describedby="basic-addon2"
+          onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+        />
+        <Button variant="outline-secondary" id="button-addon2" onClick={() => searchUsers(finalllUsers)}>
+          Search Query
+        </Button>
+      </InputGroup>
       <Table striped bordered hover>
         <thead>
           <tr>
