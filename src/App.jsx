@@ -10,6 +10,7 @@ import Card from 'react-bootstrap/Card';
 import Placeholder from 'react-bootstrap/Placeholder';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import AutoCompeleteFeatre from './components/autocomplete/AutoComplete';
 
 
 const parseQuery = (queryString) => {
@@ -392,7 +393,7 @@ else if(!loading && users.length > 0 ){
           </Button>
         </Modal.Footer>
       </Modal>
-
+<AutoCompeleteFeatre />
 
     </Container >
   );
